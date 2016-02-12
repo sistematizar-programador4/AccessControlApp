@@ -1,0 +1,163 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+html{
+	height: 100%;
+}
+body{
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
+	margin: 0 ;
+	height: 100%
+}
+.linkEditar{
+	color:#41a1ca !important;
+}
+.displayNone{
+	display: none !important;
+}
+.precio:before{
+	content:"$";
+}
+.inlineSectionForm{
+	display: flex
+}
+.inlineSectionForm .sectionForm{
+	margin: 10px;
+}
+.sinPermisos{
+	background-image: url('../../public/img/fondo1_.jpg');
+	height: 100%;
+	background-size: cover;
+	padding: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+	font-size:1rem;
+}
+.sinPermisos > h1,.sinPermisos > p{
+	width: 100%;
+	text-align: center;
+}
+.annotation{
+	display: flex;
+	justify-content:flex-end;
+	-webkit-user-select: none;
+	user-select: none;
+}
+.annotation > p{
+	margin: 0;
+	color: gray;
+	font-size: .8rem;
+	border: 1px solid gray;
+	padding: 3px;
+	border-radius: 5px;
+	width: 70%;
+}
+.new_planillaNotas #info{
+	width: 15%
+}
+.new_planillaNotas #PlantillaNotas{
+	width: 85% !important;
+}
+.new_planillaNotas{
+	display: flex;
+}
+
+/*paginator*/
+.paginator{
+	background-color: white;
+}
+.paginator tr{
+	display: none
+}
+.paginator tr:hover{
+	background-color:#FCEDD8;
+}
+.paginator tr.show{
+	display: table-row;
+}
+.paginator tr:nth-child(2n){
+	background-color: #F3F7FB
+}
+
+.viewEditCreateAndRemoveRecordModel{
+	border:1px solid gray;
+	/**white-space: nowrap;*/
+}
+.viewEditCreateAndRemoveRecordModel thead{
+	transition:2s all linear;
+	background-image: linear-gradient(to bottom, white, #F5F5F5);
+	padding: 10px 0 ;
+	cursor:pointer;
+}
+.viewEditCreateAndRemoveRecordModel thead th:hover{
+	background-image: linear-gradient(to top, white, #F5F5F5);
+}
+.viewEditCreateAndRemoveRecordModel tbody td{
+	text-align: center;
+	border-right: 1px solid gray;
+}
+.viewEditCreateAndRemoveRecordModel thead th{
+	padding: 10px 0 ;
+}
+.viewEditCreateAndRemoveRecordModel .paginatorPrev{
+	cursor: pointer;
+	width: 50%;
+}
+.viewEditCreateAndRemoveRecordModel .paginatorNext{
+	cursor: pointer;
+	width: 50%;
+}
+.viewEditCreateAndRemoveRecordModel input, select{
+	width: 100%;
+}
+
+/*mensajes*/
+.buttonsAddRemove{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+}
+#mensajes{
+	position: absolute;
+	border: 1px solid gray;
+	z-index: 5;
+	background-color: white;
+	padding: 10px;
+	border-top: 0;
+	right:0;
+}
+#mensajes .cMensaje{
+	border-bottom:1px solid gray;
+
+}
+#mensajes .cMensaje .mensaje{
+	margin:0;
+	padding: 0;
+}
+#mensajes .cMensaje .fecha{
+	margin:0;
+	padding: 0;
+	font-size: 0.8rem;
+}
+#mensajes .cMensaje .emisor{
+	margin:0;
+	padding: 0;
+}
+
+tr.moviCancelado {
+	background: rgb(255, 170, 170);
+	font-weight: bold;
+}
+
+.displayFlex{
+	display: flex;
+}
+
+.orderByActive:after{
+	content: "â–²"
+}
+.orderByActive[desc]:after{
+	content: "â–¼"
+}

@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>SiacolWeb</title>
+	<link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+	<link rel="stylesheet" href="{% static 'css/siacol_web_2016.css' %}">
+	<link rel="stylesheet" href="{% static 'css/style2015.css' %}">
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+	<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+	<link rel="stylesheet" href="{% static 'css/menu.css' %}">
+	<script src="{% static 'js/jquery.min.js' %}"></script>
+	{% block content_head %}
+	{% endblock content_head %}
+</head>
+<body>
+	<div class="content-width">
+		<div class="dashboard">
+			{% include 'elements/menu.html' %}
+			<div id="content">
+				{% block content %}{% endblock content %}
+			</div>
+		</div>
+	</div>
+</body>
+</html>

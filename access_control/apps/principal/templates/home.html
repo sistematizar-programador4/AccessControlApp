@@ -1,0 +1,71 @@
+{% extends 'layout/base.html' %}
+
+{% load staticfiles %}
+
+{% block content_head %}
+	<link rel="stylesheet" href="{% static 'css/lobibox.css' %}">
+	<script src="{% static 'js/lobibox.js' %}"></script>
+	<script>
+		$(document).ready(function (){
+			var timeoutid = 0;
+			$('#calum').keypress(function(e) {
+				clearTimeout(timeoutid);
+				var val = $('#calum').val();
+				if(val != ""){
+					timeoutid = setTimeout(function(){
+						send_data($('#calum').val());
+					}, 3000);
+				}
+			});
+			$('.send').click(function(e) {
+				e.preventDefault();
+				var val = $('#calum').val();
+				if(val != ""){
+					send_data(val);
+				}
+			});
+			function send_data(value){
+				$.get("Alumnos/mark-access/"+value, function(value){
+					$('#dataAlum').empty();
+					if(value.type == 'success'){
+						$('#dataAlum').append(
+							'<div style="text-align: rigth; width: 50%; display: inline;-block;">'+
+								'<img src="/static/img/students/'+value.foto+'" style="width: 100px; margin-bottom: -25px;">'+
+							'</div>'+
+							'<div style="text-align: left; width: 50%; display: inline-block; padding: 10px;">'+
+								'<p><strong>Nombre:</strong> '+value.apellido+' '+value.nombre+'</p>'+
+								'<p><strong>Código:</strong> '+value.calum+'</p>'+
+								'<p><strong>Grupo:</strong> '+value.grupo+'</p>'+
+							'</div>'
+						);
+					}
+					console.log(value);
+					Lobibox.notify(value.type, {
+						title: value.title,
+						msg: value.message,
+						sound: false,
+					});
+					$('#calum').val('');
+				});
+			}
+		});
+	</script>
+{% endblock content_head %}
+
+{% block content %}
+	<section class="sectionForm" style="text-align: center;">
+		<section class="headerForm">
+			<legend class="titleForm">
+				Control de Acceso
+			</legend>
+		</section>
+		<h2>Escanee el código con la lectora de código de barras para buscar el alumno</h2>
+		<img src="{% static 'img/separator.png' %}" style="width: 40%; height: auto; padding-top: 20px;">
+		<h3>Ó escriba el código del alumno</h3>
+		<div class="form_new">
+			<input type="text" name="calum" maxlength="10" placeholder="Ingrese el Código del Alumno" id="calum">
+			<a href="#" class="btn btn-accept send">Buscar Alumno</a>
+		</div>
+		<section id="dataAlum"></section>
+	</section>
+{% endblock content %}
