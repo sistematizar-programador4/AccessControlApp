@@ -75,15 +75,29 @@ WSGI_APPLICATION = 'access_control.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
+"""
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.db.backends.sqlite3',
 		'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 	}
 }
+"""
+DATABASES = {
+	'default': {
+		'ENGINE': 'django.db.backends.mysql',
+		'NAME': 'access_control',
+		'USER': 'root',
+		'PASSWORD': '',
+		'OPTIONS': {
+			'autocommit': True,
+		},
+		'HOST': '127.0.0.1',
+	}
+}
 
-ENVIRONMENT_SCHOOL = 'environment14'
+
+SCHOOL_KEY = 'Hbc3zn)T8/@ef<6D*bXP(t4IkzIn1E'
 
 NAME_SCHOOL = 'COLEGIO DEMO SIACOLWEB'
 

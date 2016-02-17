@@ -4,6 +4,7 @@
 
 {% block content_head %}
 	<link rel="stylesheet" href="{% static 'css/lobibox.css' %}">
+	<script src="{% static 'js/detail.js' %}"></script>
 	<script src="{% static 'js/lobibox.js' %}"></script>
 	<script>
 		$(document).ready(function (){
@@ -29,9 +30,6 @@
 					$('#dataAlum').empty();
 					if(value.type == 'success'){
 						$('#dataAlum').append(
-							'<div style="text-align: rigth; width: 50%; display: inline;-block;">'+
-								'<img src="/static/img/students/'+value.foto+'" style="width: 100px; margin-bottom: -25px;">'+
-							'</div>'+
 							'<div style="text-align: left; width: 50%; display: inline-block; padding: 10px;">'+
 								'<p><strong>Nombre:</strong> '+value.apellido+' '+value.nombre+'</p>'+
 								'<p><strong>Código:</strong> '+value.calum+'</p>'+

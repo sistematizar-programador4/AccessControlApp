@@ -10,9 +10,32 @@
 	<link rel="stylesheet" href="{% static 'css/siacol_web_2016.css' %}">
 	<link rel="stylesheet" href="{% static 'css/style2015.css' %}">
 	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+	<link rel="stylesheet" href="{% static 'css/fonts.css' %}">
 	<link rel="stylesheet" href="{% static 'css/forms.css' %}">
 	<link rel="stylesheet" href="{% static 'css/menu.css' %}">
 	<script src="{% static 'js/jquery.min.js' %}"></script>
+	<script>
+		$(document).ready(function (){
+			$('.sync').click(function(e) {
+				$('.loading').append(
+					'<img src="/static/img/loading.gif"/>'+
+					'<h3>Sincronizando, por favor espere</h3>'
+				);
+				$.ajax({
+					url: $(this).attr('href'),
+					success: function(value){
+						$('.loading').empty();
+							Lobibox.notify(value.type, {
+								title: value.title,
+								msg: value.message,
+								sound: false,
+						});
+					}
+				});
+				e.preventDefault();
+			});
+		});
+	</script>
 	{% block content_head %}
 	{% endblock content_head %}
 </head>
@@ -23,6 +46,7 @@
 			<div id="content">
 				{% block content %}{% endblock content %}
 			</div>
+			<div class="loading" style="text-align: center"></div>
 		</div>
 	</div>
 </body>
