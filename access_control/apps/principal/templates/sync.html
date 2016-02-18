@@ -1,0 +1,57 @@
+{% extends 'layout/base.html' %}
+
+{% load staticfiles %}
+
+{% block content_head %}
+	<link rel="stylesheet" href="{% static 'css/lobibox.css' %}">
+	<script src="{% static 'js/detail.js' %}"></script>
+	<script src="{% static 'js/lobibox.js' %}"></script>
+	<script>
+		$(document).ready(function (){
+			$('.sync').click(function(e) {
+				$.ajax({
+					url: $(this).attr('href'),
+					beforeSend: function(){
+						$('.loading').empty();
+						$('.loading').append(
+							'<img src="/static/img/loading.gif"/>'+
+							'<h3>Sincronizando, por favor espere</h3>'
+						);
+					},
+					success: function(value){
+						$('.loading').empty();
+						if(value.sync_alum){
+							$('.loading').append(
+								'<p><strong>Total alumnos sincronizados: </strong>'+value.totalum+'</p>'+
+								'<p><strong>Total alumnos nuevos: </strong>'+value.newalum+'</p>'+
+								'<p><strong>Total alumnos actualizados: </strong>'+value.upalum+'</p>'
+							);
+						}
+						Lobibox.notify(value.type, {
+							title: value.title,
+							msg: value.message,
+							sound: false,
+						});
+					}
+				});
+				e.preventDefault();
+			});
+		});
+	</script>
+{% endblock content_head %}
+
+{% block content %}
+	<section class="sectionForm" style="text-align: center;">
+		<section class="headerForm">
+			<legend class="titleForm">
+				Sincronización
+			</legend>
+		</section>
+		<h2>Seleccione una opción</h2>
+		<img src="{% static 'img/separator.png' %}" style="width: 40%; height: auto; padding-top: 20px;">
+		<div class="form_new">
+			<a href="{% url 'sync_alum' %}" class="btn btn-accept sync">Sincronizar Alumnos</a>
+			<a href="#" class="btn btn-accept">Sincronizar Ingreso/Salida</a>
+		</div>
+	</section>
+{% endblock content %}

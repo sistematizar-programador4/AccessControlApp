@@ -6,12 +6,6 @@
 <div class="menu-content">
 	<ul class="menu_new">
 		<li><a href="{% url 'home' %}">Inicio</a></li>
-		<li class="dropdown">
-			<a class="dropdown-toggle" onclick="showMenu(event, 2)">Sincronización</a>
-			<ul class="dropdown-menu" dataitemmenu="2">
-				<li><a href="{% url 'sync_alum' %}" class="sync">Sincronizar alumnos</a></li>
-				<li><a href="#">Sincronizar acceso</a></li>
-			</ul>
-		</li>
+		<li><a href="{% url 'sync' %}">Sincronización</a></li>
 	</ul>
 </div>

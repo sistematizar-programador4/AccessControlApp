@@ -9,6 +9,18 @@
 	<script>
 		$(document).ready(function (){
 			var timeoutid = 0;
+			var value = "";
+			$(document).keypress(function(e) {
+				var intRegex = /^\d+$/;
+				code = String.fromCharCode(e.which);
+				if(intRegex.test(code)){
+					value = value + String.fromCharCode(e.which);
+				}
+				if(value.length == 8){
+					send_data(value);
+					value = "";
+				}
+			});
 			$('#calum').keypress(function(e) {
 				clearTimeout(timeoutid);
 				var val = $('#calum').val();
@@ -37,7 +49,6 @@
 							'</div>'
 						);
 					}
-					console.log(value);
 					Lobibox.notify(value.type, {
 						title: value.title,
 						msg: value.message,

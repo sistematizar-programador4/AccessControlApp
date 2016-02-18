@@ -16,24 +16,19 @@
 	<script src="{% static 'js/jquery.min.js' %}"></script>
 	<script>
 		$(document).ready(function (){
-			$('.sync').click(function(e) {
-				$('.loading').append(
-					'<img src="/static/img/loading.gif"/>'+
-					'<h3>Sincronizando, por favor espere</h3>'
-				);
-				$.ajax({
-					url: $(this).attr('href'),
-					success: function(value){
-						$('.loading').empty();
-							Lobibox.notify(value.type, {
-								title: value.title,
-								msg: value.message,
-								sound: false,
-						});
-					}
-				});
-				e.preventDefault();
-			});
+			loop();
+			function sync_access(){
+				alert("functioa");
+			}
+			function loop() {
+				var now = new Date();
+				if (now.getHours() === 11 && now.getMinutes() === 15) {
+					sync_access();
+				}
+				now = new Date();
+				var delay = 60000 - (now % 60000);
+				setTimeout(loop, delay);
+			}
 		});
 	</script>
 	{% block content_head %}

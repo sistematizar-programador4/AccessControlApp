@@ -13,6 +13,9 @@ class Grado(models.Model):
 	def __str__(self):
 		return self.cgrado+" - "+self.ngrado
 
+	def __unicode__(self):
+		return self.cgrado+" - "+self.ngrado
+
 class Grupo(models.Model):
 	cgrupo = models.CharField(max_length = 8, primary_key = True)
 	ngrupo = models.CharField(max_length = 80)
