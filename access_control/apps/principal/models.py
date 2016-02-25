@@ -50,6 +50,7 @@ class MoviRegistro(models.Model):
 	date = models.DateField(auto_now = False)
 	time = models.TimeField()
 	type_reg = models.CharField(max_length = 1, choices = CHOICE_TYPE, default = 'I')
+	state = models.IntegerField(default = 0)
 
 class Parametro(models.Model):
 	cparam = models.CharField(max_length = 3, primary_key = True)

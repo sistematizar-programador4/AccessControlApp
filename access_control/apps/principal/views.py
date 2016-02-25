@@ -59,7 +59,7 @@ def save_grado(value_array):
 
 def sync_alum(request):
 	response = {}
-	r = requests.post('http://192.168.0.10/siacolweb_version_2016/sw4.2/conection/index', data = {'school_key': settings.SCHOOL_KEY})
+	r = requests.post('http://192.168.0.10/siacolweb_version_2016/sw4.2/conection/syncAlum', data = {'school_key': settings.SCHOOL_KEY})
 	if r.status_code == 200:
 		response_serv = r.text
 		response_serv = response_serv.replace('\r','').replace('\n','').split('*')
@@ -84,7 +84,26 @@ def sync_alum(request):
 	return HttpResponse(json.dumps(response), content_type = 'application/json')
 
 def sync_access(request):
-	pass
+	response = {}
+	directory = 'access_control/static/files/file.txt'
+	movi_registro = open(directory, 'w')
+	m_registro = MoviRegistro.objects.filter(state = 0)
+	for movi in m_registro:
+		movi_registro.write(str(movi.pk)+', '+movi.calum.calum+', '+str(movi.date)+', '+str(movi.time)+', '+movi.type_reg+'\n')
+	movi_registro.close()
+	movi_registro = {'file': open(directory, 'rb')}
+	r = requests.post('http://192.168.0.10/siacolweb_version_2016/sw4.2/conection/syncAccess', files = movi_registro, data = {'school_key': settings.SCHOOL_KEY})
+	print r.status_code
+	if r.status_code == 200:
+		m_registro.update(state = 1)
+		response['type'] = 'success'
+		response['title'] = 'Exito'
+		response['message'] = 'Exito en la sincronizacion de datos'
+	else:
+		response['title'] = 'Ha ocurrido un error'
+		response['type'] = 'error'
+		response['message'] = 'Favor comunicarse con SistematizarEF'
+	return HttpResponse(json.dumps(response), content_type = 'application/json')
 
 def mark_access(request, calum):
 	response = {}
