@@ -10,26 +10,21 @@
 		$(document).ready(function (){
 			var timeoutid = 0;
 			var value = "";
+			// Evento pendiente del teclado/pistola lectora del codigo de barras
 			$(document).keypress(function(e) {
+				// Si se esta presionando solo teclas numericas, guarda hasta llegar a un tope maximo de 8 caracteres (numero maximo del codigo del alumno)
 				var intRegex = /^\d+$/;
 				code = String.fromCharCode(e.which);
 				if(intRegex.test(code)){
 					value = value + String.fromCharCode(e.which);
 				}
 				if(value.length == 8){
+					// Si el maximo de numero digitados es 8, envia los valores digitados a send_data y vacia la variable que contiene el codigo del alumno
 					send_data(value);
 					value = "";
 				}
 			});
-			$('#calum').keypress(function(e) {
-				clearTimeout(timeoutid);
-				var val = $('#calum').val();
-				if(val != ""){
-					timeoutid = setTimeout(function(){
-						send_data($('#calum').val());
-					}, 3000);
-				}
-			});
+			// Evento del boton para enviar el codigo ingresado en el input text
 			$('.send').click(function(e) {
 				e.preventDefault();
 				var val = $('#calum').val();
@@ -37,8 +32,11 @@
 					send_data(val);
 				}
 			});
+			// Funcion de envio del codigo del alumno
 			function send_data(value){
+				// Realiza la peticion ajax, enviando el codigo tomado del alumno
 				$.get("Alumnos/mark-access/"+value, function(value){
+					// Vacia el input text
 					$('#dataAlum').empty();
 					if(value.type == 'success'){
 						$('#dataAlum').append(
