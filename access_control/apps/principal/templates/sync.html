@@ -4,24 +4,29 @@
 
 {% block content_head %}
 	<link rel="stylesheet" href="{% static 'css/lobibox.css' %}">
+	<link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}">
 	<script src="{% static 'js/detail.js' %}"></script>
 	<script src="{% static 'js/lobibox.js' %}"></script>
+	<script src="{% static 'js/jquery-ui.min.js' %}"></script>
 	<script>
 		$(document).ready(function (){
 			$('#sync_access').click(function(e){
 				e.preventDefault();
 				sync_access();
 			});
-			$('.sync').click(function(e) {
+			function sync_alum(href, con){
+				console.log(con);
 				$.ajax({
-					url: $(this).attr('href'),
+					url: href,
+					data: {'confirm': con},
+					type: 'POST',
 					beforeSend: function(){
 						$('.loading').empty();
 						$('.loading').append(load_event);
 					},
 					success: function(value){
 						$('.loading').empty();
-						if(value.upalum){
+						if(value.state == 'state'){
 							$('.loading').append(
 								'<p><strong>Total alumnos sincronizados: </strong>'+value.totalum+'</p>'+
 								'<p><strong>Total alumnos nuevos: </strong>'+value.newalum+'</p>'+
@@ -33,6 +38,29 @@
 							msg: value.message,
 							sound: false,
 						});
+					}
+				});
+			}
+			$('.sync').click(function(e) {
+				var href = $(this).attr('href');
+				var con = 'false';
+				$( "#dialog-confirm" ).dialog({
+					resizable: false,
+					closeOnEscape: false,
+					height: 180,
+					width: 400,
+					modal: true,
+					buttons: {
+						"Actualizar Alumnos": function() {
+							con = 'true';
+							$(this).dialog("close");
+						},
+						"No, solo sincronizar": function() {
+							$(this).dialog("close");
+						}
+					},
+					close: function(){
+						sync_alum(href, con);
 					}
 				});
 				e.preventDefault();
@@ -55,4 +83,7 @@
 			<a href="#" class="btn btn-accept" id="sync_access">Sincronizar Ingreso/Salida</a>
 		</div>
 	</section>
+	<div id="dialog-confirm" title="Alerta" style="display: none">
+		<p>¿Desea actualizar los alumnos?</p>
+	</div>
 {% endblock content %}

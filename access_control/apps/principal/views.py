@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponseRedirect, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta
 from django.shortcuts import render
 from django.conf import settings
+from django.db.models import Max
 import json, time, requests
 from .models import *
 from .forms import *
 
-# Se crea las dos variables para el contador del numero de alumnos sincronizados
 newalum = 0
 upalum = 0
 
@@ -19,62 +20,35 @@ def sync(request):
 
 # Se recibe los datos que comienza con un indice de alumnos
 def save_alum(value_array):
-	# Se busca el grupo, ya que al guardar el grupo del alumno, este debe ser una instancia propia del modelo
-	cgrupo = Grupo.objects.get(cgrupo = value_array[3])
 	try:
 		# Si el alumno existe, se actualiza
-		alumno = Alumno.objects.get(calum = value_array[1])
+		alumno = Alumno.objects.get(calum = value_array[0])
 		# Se reemplaza $ por un espacio vacio, este indica que no hay registro en ese elemento
-		alumno.idalum = value_array[2].replace('$', '')
-		alumno.cgrupo = cgrupo
-		alumno.ape1alum = value_array[4]
-		alumno.ape2alum = value_array[5].replace('$', '')
-		alumno.nom1alum = value_array[6]
-		alumno.nom2alum = value_array[7].replace('$', '')
-		alumno.rh = value_array[8].replace('$', '')
+		alumno.idalum = value_array[1].replace('$', '')
+		alumno.ape1alum = value_array[2]
+		alumno.ape2alum = value_array[3].replace('$', '')
+		alumno.nom1alum = value_array[4]
+		alumno.nom2alum = value_array[5].replace('$', '')
+		alumno.rh = value_array[6].replace('$', '')
 		# Actualiza el alumno
-		alumno.save(update_fields = ['idalum', 'cgrupo', 'ape1alum', 'ape2alum', 'nom1alum', 'nom2alum', 'rh'])
+		alumno.save(update_fields = ['idalum', 'ape1alum', 'ape2alum', 'nom1alum', 'nom2alum', 'rh'])
 		# Llama la la variable global upalum y suma +1 para contar el numero de registros actualizados
 		global upalum
 		upalum = upalum + 1
 	except:
 		# Si el alumno no existe, se guarda
-		alumno = Alumno(calum = value_array[1], idalum = value_array[3].replace('$', ''), cgrupo = cgrupo, ape1alum = value_array[4], ape2alum = value_array[5].replace('$', ''), nom1alum = value_array[6], nom2alum = value_array[7].replace('$', ''), rh = value_array[8].replace('$', ''))
+		alumno = Alumno(calum = value_array[0], idalum = value_array[1].replace('$', ''), ape1alum = value_array[2], ape2alum = value_array[3].replace('$', ''), nom1alum = value_array[4], nom2alum = value_array[5].replace('$', ''), rh = value_array[6].replace('$', ''))
 		alumno.save()
 		# Llama la la variable global newalum y suma +1 para contar el numero de registros nuevos
 		global newalum
 		newalum = newalum + 1
 
-def save_grupo(value_array):
-	# Se busca el grado, ya que al guardar el grado del grupo, este debe ser una instancia propia del modelo
-	cgrado = Grado.objects.get(cgrado = value_array[4])
-	try:
-		# Si el grupo existe, se actualiza
-		grupo = Grupo.objects.get(cgrupo = value_array[1])
-		grupo.ngrupo = value_array[2]
-		grupo.ngrupoalt = value_array[3]
-		grupo.cgrado = cgrado
-		grupo.save(update_fields = ['ngrado', 'ngrupoalt', 'cgrado'])
-	except:
-		# Si el grupo no existe, se guarda
-		grupo = Grupo(cgrupo = value_array[1], ngrupo = value_array[2], cgrado = cgrado)
-		grupo.save()
-
-def save_grado(value_array):
-	try:
-		# Si el grado existe, se actualiza
-		grado = Grado.objects.get(cgrado = value_array[1])
-		grado.ngrado = value_array[2]
-		grado.save(update_fields['ngrado'])
-	except:
-		# Si el grado no existe, se guarda
-		grado = Grado(cgrado = value_array[1], ngrado = value_array[2])
-		grado.save()
-
+@csrf_exempt
 def sync_alum(request):
+	max_calum = Alumno.objects.all().aggregate(Max('calum'))['calum__max'] if request.POST.get('confirm') == 'false' else ''
 	response = {}
 	# Realiza una peticion http via post a una url del server
-	r = requests.post('http://192.168.0.10/siacolweb_version_2016/sw4.2/conection/syncAlum', data = {'school_key': settings.SCHOOL_KEY})
+	r = requests.post('http://192.168.0.12/siacolweb_version_2016/sw4.2/conection/syncAlum', data = {'school_key': settings.SCHOOL_KEY, 'max_calum': max_calum})
 	if r.status_code == 200:
 		# Si se realizo la peticion y se recibieron los datos, asigna los datos recibidos a una varible
 		response_serv = r.text
@@ -88,16 +62,18 @@ def sync_alum(request):
 			for val in resp.split('/'):
 				value_array.append(val)
 			# Dependiento del indice del registro, este se envia a una funcion especifica para ser guardado
-			if value_array[0] == 'grados': save_grado(value_array)
-			if value_array[0] == 'grupos': save_grupo(value_array)
-			if value_array[0] == 'alumnos': save_alum(value_array)
+			save_alum(value_array)
 		# Se envia mensaje succes, total de alumnos nuevos y sincronizados
 		response['totalum'] = newalum + upalum
 		response['newalum'] = newalum
+		response['state'] = 'state'
 		response['upalum'] = upalum
 		response['type'] = 'success'
 		response['title'] = 'Exito'
 		response['message'] = 'Exito en la sincronizacion de datos'
+		global upalum, newalum
+		upalum = 0
+		newalum = 0
 	else:
 		# Se envia mensaje error si no se realizo la peticion
 		response['title'] = 'Ha ocurrido un error'
@@ -126,7 +102,7 @@ def sync_access(request):
 	movi_registro = {'file': open(directory, 'rb')}
 	# La llave del colegio se encuentra en settings.py en una variable llamada SCHOOL_KEY
 	# Realiza peticion a la url del server via http y se envia por post el file y la llave del colegio
-	r = requests.post('http://192.168.0.10/siacolweb_version_2016/sw4.2/conection/syncAccess', files = movi_registro, data = {'school_key': settings.SCHOOL_KEY})
+	r = requests.post('http://192.168.0.12/siacolweb_version_2016/sw4.2/conection/syncAccess', files = movi_registro, data = {'school_key': settings.SCHOOL_KEY})
 	if r.status_code == 200:
 		# Si se realizo la peticion y el server los guardó, se actualiza el state a 1 de los registros listados en el file
 		m_registro.update(state = 1)
@@ -167,14 +143,13 @@ def mark_access(request, calum):
 		movimiento.save()
 		# Envia succes
 		response['sync_alum'] = True
-		response['title'] = type_reg
+		response['title'] = 'Exito en el registro'
 		response['type'] = 'success'
-		response['message'] = 'Exito en el registro'
+		response['message'] = 'Movimiento registrado'
 		response['calum'] = alumno.calum
 		response['nombre'] = alumno.nom1alum+' '+alumno.nom2alum
 		response['apellido'] = alumno.ape1alum+' '+alumno.ape2alum
 		response['rh'] = alumno.rh
-		response['grupo'] = alumno.cgrupo.ngrupo
 	except Alumno.DoesNotExist:
 		# Si no existe el alumno se envia mensaje error
 		response['title'] = 'Ha ocurrido un error'
