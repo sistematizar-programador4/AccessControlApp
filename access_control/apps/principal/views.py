@@ -48,7 +48,7 @@ def sync_alum(request):
 	max_calum = Alumno.objects.all().aggregate(Max('calum'))['calum__max'] if request.POST.get('confirm') == 'false' else ''
 	response = {}
 	# Realiza una peticion http via post a una url del server
-	r = requests.post('http://192.168.0.12/siacolweb_version_2016/sw4.2/conection/syncAlum', data = {'school_key': settings.SCHOOL_KEY, 'max_calum': max_calum})
+	r = requests.post('http://siacolweb.com/sw5.0/conection/syncAlum', data = {'school_key': settings.SCHOOL_KEY, 'max_calum': max_calum})
 	if r.status_code == 200:
 		# Si se realizo la peticion y se recibieron los datos, asigna los datos recibidos a una varible
 		response_serv = r.text
@@ -92,27 +92,32 @@ def sync_access(request):
 	movi_registro = open(directory, 'w')
 	# Se Consulta y se lista todos los registro con state = 0
 	m_registro = MoviRegistro.objects.filter(state = 0)
-	for movi in m_registro:
-		# Se escribe en linea separada el registro del acceso el alumno
-		# Se sigue la regla de orden de: pk(llave primaria del registro), codigo-alumno, fecha, hora, tipo-registro(salida o ingreso)
-		movi_registro.write(str(movi.pk)+', '+movi.calum.calum+', '+str(movi.date)+', '+str(movi.time)+', '+movi.type_reg+'\n')
-	# Guarda el file
-	movi_registro.close()
-	# Abre el arhivo guardado en modo lectura
-	movi_registro = {'file': open(directory, 'rb')}
-	# La llave del colegio se encuentra en settings.py en una variable llamada SCHOOL_KEY
-	# Realiza peticion a la url del server via http y se envia por post el file y la llave del colegio
-	r = requests.post('http://192.168.0.12/siacolweb_version_2016/sw4.2/conection/syncAccess', files = movi_registro, data = {'school_key': settings.SCHOOL_KEY})
-	if r.status_code == 200:
-		# Si se realizo la peticion y el server los guardó, se actualiza el state a 1 de los registros listados en el file
-		m_registro.update(state = 1)
-		response['type'] = 'success'
-		response['title'] = 'Exito'
-		response['message'] = 'Exito en la sincronizacion de datos'
+	if m_registro.exists():
+		for movi in m_registro:
+			# Se escribe en linea separada el registro del acceso el alumno
+			# Se sigue la regla de orden de: pk(llave primaria del registro), codigo-alumno, fecha, hora, tipo-registro(salida o ingreso)
+			movi_registro.write(str(movi.pk)+', '+movi.calum.calum+', '+str(movi.date)+', '+str(movi.time)+', '+movi.type_reg+'\n')
+		# Guarda el file
+		movi_registro.close()
+		# Abre el arhivo guardado en modo lectura
+		movi_registro = {'file': open(directory, 'rb')}
+		# La llave del colegio se encuentra en settings.py en una variable llamada SCHOOL_KEY
+		# Realiza peticion a la url del server via http y se envia por post el file y la llave del colegio
+		r = requests.post('http://siacolweb.com/sw5.0/conection/syncAccess', files = movi_registro, data = {'school_key': settings.SCHOOL_KEY})
+		if r.status_code == 200:
+			# Si se realizo la peticion y el server los guardó, se actualiza el state a 1 de los registros listados en el file
+			m_registro.update(state = 1)
+			response['type'] = 'success'
+			response['title'] = 'Exito'
+			response['message'] = 'Exito en la sincronizacion de datos'
+		else:
+			response['title'] = 'Ha ocurrido un error'
+			response['type'] = 'error'
+			response['message'] = 'Favor comunicarse con SistematizarEF'
 	else:
-		response['title'] = 'Ha ocurrido un error'
-		response['type'] = 'error'
-		response['message'] = 'Favor comunicarse con SistematizarEF'
+		response['title'] = 'Alerta'
+		response['type'] = 'warning'
+		response['message'] = 'No hay datos para sincronizar'
 	# Resouesta json
 	return HttpResponse(json.dumps(response), content_type = 'application/json')
 
@@ -134,10 +139,12 @@ def mark_access(request, calum):
 		p_hour = p_hour.time().strftime('%H:%M:%S')
 		m_hour = m_hour.time().strftime('%H:%M:%S')
 		# Busca entre un rango de hora inicial y hora final, el parametro correspondiente al tipo de registro (Ingreso o Salida)
-		for params in Parametro.objects.raw('SELECT * FROM principal_parametro WHERE param2 BETWEEN %s AND %s', [m_hour, p_hour]):
+		for params in Parametro.objects.raw('SELECT * FROM principal_parametro WHERE param3 = "0" AND param2 BETWEEN %s AND %s', [m_hour, p_hour]):
 			type_reg = params.param1
 		# Si arroja vacio, se toma por defecto como una salida
+		print type_reg
 		type_reg = 'S' if type_reg == '' else type_reg
+		print type_reg
 		# Guarda el registro del acceso del alumnos
 		movimiento = MoviRegistro(calum = alumno, date = datetime.now(), time = time_now, type_reg = type_reg)
 		movimiento.save()

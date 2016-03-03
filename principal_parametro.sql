@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 02-03-2016 a las 13:36:12
+-- Tiempo de generación: 03-03-2016 a las 14:07:32
 -- Versión del servidor: 10.1.9-MariaDB
 -- Versión de PHP: 5.6.15
 
@@ -39,10 +39,10 @@ CREATE TABLE `principal_parametro` (
 --
 
 INSERT INTO `principal_parametro` (`cparam`, `nparam`, `param1`, `param2`, `param3`) VALUES
-('001', 'Ingreso', 'I', '06:30:00', NULL),
-('002', 'Salida', 'S', '12:00:00', NULL),
+('001', 'Ingreso', 'I', '07:30:00', '0'),
+('002', 'Salida', 'S', '12:00:00', '0'),
 ('003', 'Rango', 'R', '00:00:00', '2'),
-('004', 'Sincronizacion', 'SY', '09:00:00', NULL);
+('004', 'Sincronizacion', 'SY', '08:58:00', NULL);
 
 --
 -- Índices para tablas volcadas

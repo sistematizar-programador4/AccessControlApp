@@ -1,20 +1,33 @@
 // Crea una variable el cual contenga la imagen del gif loading
 var load_event = '<img src="/static/img/loading.gif"/><h3>Sincronizando, por favor espere</h3>';
 // Crea una funcion loop par que este pendiente de la hora de sincronizacion
+var hour = 0, minute = 0;
+// Peticion get a una url de la app para obtener la hora de sincronizacion tomado de la base de datos
+$.get('/get-hour-sync', function(data){
+	hour = data.hour;
+	minute = data.minute;
+});
+window.setInterval(function(){
+	var now = new Date();
+	if (now.getHours() === parseInt(hour) && now.getMinutes() === parseInt(minute)){
+		// Si llego la hora, va a la funcion sync_access
+		sync_access();
+	}
+}, 60000);
+/*
 function loop(){
 	// Toma la fecha y hora actual
 	var now = new Date();
-	// Peticion get a una url de la app para obtener la hora de sincronizacion tomado de la base de datos
-	$.get('/get-hour-sync', function(data){
-		if (now.getHours() === parseInt(data.hour) && now.getMinutes() === parseInt(data.minute)){
-			// Si llego la hora, va a la funcion sync_access
-			sync_access();
-		}
-	});
+	if (now.getHours() === parseInt(hour) && now.getMinutes() === parseInt(minute)){
+		// Si llego la hora, va a la funcion sync_access
+		sync_access();
+	}
+	console.log(hour, minute);
 	// Queda abierto a la espera de la hora de sincronizacion
 	var delay = 60000 - (now % 60000);
 	setTimeout(loop, delay);
 }
+*/
 function sync_access(){
 	// Realiza una peticion ajax a una url de la app
 	$.ajax({

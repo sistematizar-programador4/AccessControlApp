@@ -22,6 +22,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '09xs-4!a!ey0=pw==4mi%r2ta_x!_pw$-9f1-1#8_0$0)sd&&$'
 
+SCHOOL_KEY = 'xZFS!eU=#5jcgzL&a2zK&BU*6rv^&pxYjunMJFr8FMJfZ9JE&8'
+
+NAME_SCHOOL = 'Demo - Siacolweb'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -96,10 +100,6 @@ DATABASES = {
 	}
 }
 
-
-SCHOOL_KEY = 'Hbc3zn)T8/@ef<6D*bXP(t4IkzIn1E'
-
-NAME_SCHOOL = 'COLEGIO DEMO SIACOLWEB'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
