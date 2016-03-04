@@ -71,8 +71,9 @@ def sync_alum(request):
 		response['type'] = 'success'
 		response['title'] = 'Exito'
 		response['message'] = 'Exito en la sincronizacion de datos'
-		global upalum, newalum
+		global upalum
 		upalum = 0
+		global newalum
 		newalum = 0
 	else:
 		# Se envia mensaje error si no se realizo la peticion
@@ -104,6 +105,7 @@ def sync_access(request):
 		# La llave del colegio se encuentra en settings.py en una variable llamada SCHOOL_KEY
 		# Realiza peticion a la url del server via http y se envia por post el file y la llave del colegio
 		r = requests.post('http://siacolweb.com/sw5.0/conection/syncAccess', files = movi_registro, data = {'school_key': settings.SCHOOL_KEY})
+		print r.text
 		if r.status_code == 200:
 			# Si se realizo la peticion y el server los guardó, se actualiza el state a 1 de los registros listados en el file
 			m_registro.update(state = 1)
@@ -128,6 +130,7 @@ def mark_access(request, calum):
 		# Se busca si existe el alumno
 		alumno = Alumno.objects.get(calum = calum)
 		type_reg = ''
+		repetido = False
 		# Fecha y hora actual
 		time_now = datetime.now()
 		# Busca y convierte en entero el parametro rango de hora
@@ -142,21 +145,26 @@ def mark_access(request, calum):
 		for params in Parametro.objects.raw('SELECT * FROM principal_parametro WHERE param3 = "0" AND param2 BETWEEN %s AND %s', [m_hour, p_hour]):
 			type_reg = params.param1
 		# Si arroja vacio, se toma por defecto como una salida
-		print type_reg
 		type_reg = 'S' if type_reg == '' else type_reg
-		print type_reg
 		# Guarda el registro del acceso del alumnos
-		movimiento = MoviRegistro(calum = alumno, date = datetime.now(), time = time_now, type_reg = type_reg)
-		movimiento.save()
-		# Envia succes
-		response['sync_alum'] = True
-		response['title'] = 'Exito en el registro'
-		response['type'] = 'success'
-		response['message'] = 'Movimiento registrado'
-		response['calum'] = alumno.calum
-		response['nombre'] = alumno.nom1alum+' '+alumno.nom2alum
-		response['apellido'] = alumno.ape1alum+' '+alumno.ape2alum
-		response['rh'] = alumno.rh
+		for pro in MoviRegistro.objects.raw('SELECT * FROM principal_moviregistro WHERE calum_id = "'+alumno.calum+'" AND date = "'+str(time_now.date())+'" AND type_reg = "'+type_reg+'" AND time BETWEEN "'+m_hour+'" AND "'+p_hour+'"'):
+			repetido = True
+		if repetido is True:
+			response['title'] = 'Ha ocurrido un error'
+			response['type'] = 'error'
+			response['message'] = 'El alumno ya ha sido registrado'
+		else:
+			movimiento = MoviRegistro(calum = alumno, date = datetime.now(), time = time_now, type_reg = type_reg)
+			movimiento.save()
+			# Envia succes
+			response['sync_alum'] = True
+			response['title'] = 'Exito en el registro'
+			response['type'] = 'success'
+			response['message'] = 'Movimiento registrado'
+			response['calum'] = alumno.calum
+			response['nombre'] = alumno.nom1alum+' '+alumno.nom2alum
+			response['apellido'] = alumno.ape1alum+' '+alumno.ape2alum
+			response['rh'] = alumno.rh
 	except Alumno.DoesNotExist:
 		# Si no existe el alumno se envia mensaje error
 		response['title'] = 'Ha ocurrido un error'
