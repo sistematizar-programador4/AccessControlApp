@@ -10,12 +10,29 @@
 	<script src="{% static 'js/jquery-ui.min.js' %}"></script>
 	<script>
 		$(document).ready(function (){
-			$('#sync_access').click(function(e){
-				e.preventDefault();
-				sync_access();
+			$('#sync_access').click(function(){
+				var asis = 'false';
+				Lobibox.alert('info', {
+					title: "Alerta",
+					msg: "¿Desea enviar correos a los acudientes de alumnos que asistieron?",
+					buttons:{
+						yes: {
+							'text': 'Si'
+						},
+						no: {
+							'text': 'No'
+						}
+					},
+					callback: function(lobibox, type){
+						if(type == 'yes'){
+							asis = 'true';
+						}
+						sync_access(asis);
+					}
+				});
+				return false;
 			});
 			function sync_alum(href, con){
-				console.log(con);
 				$.ajax({
 					url: href,
 					data: {'confirm': con},
@@ -41,29 +58,28 @@
 					}
 				});
 			}
-			$('.sync').click(function(e) {
+			$('.sync').click(function() {
 				var href = $(this).attr('href');
 				var con = 'false';
-				$( "#dialog-confirm" ).dialog({
-					resizable: false,
-					closeOnEscape: false,
-					height: 180,
-					width: 400,
-					modal: true,
-					buttons: {
-						"Actualizar Alumnos": function() {
-							con = 'true';
-							$(this).dialog("close");
+				Lobibox.alert('info', {
+					title: "Alerta",
+					msg: "¿Desea actualizar los alumnos?",
+					buttons:{
+						yes: {
+							'text': 'Actualizar alumnos'
 						},
-						"No, solo sincronizar": function() {
-							$(this).dialog("close");
+						no: {
+							'text': 'No, solo sincronizar'
 						}
 					},
-					close: function(){
+					callback: function(lobibox, type){
+						if(type == 'yes'){
+							con = 'true';
+						}
 						sync_alum(href, con);
 					}
 				});
-				e.preventDefault();
+				return false;
 			});
 		});
 	</script>
@@ -83,7 +99,4 @@
 			<a href="#" class="btn btn-accept" id="sync_access">Sincronizar Ingreso/Salida</a>
 		</div>
 	</section>
-	<div id="dialog-confirm" title="Alerta" style="display: none">
-		<p>¿Desea actualizar los alumnos?</p>
-	</div>
 {% endblock content %}

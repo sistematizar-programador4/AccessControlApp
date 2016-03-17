@@ -29,15 +29,14 @@ def save_alum(value_array):
 		alumno.ape2alum = value_array[3].replace('$', '')
 		alumno.nom1alum = value_array[4]
 		alumno.nom2alum = value_array[5].replace('$', '')
-		alumno.rh = value_array[6].replace('$', '')
 		# Actualiza el alumno
-		alumno.save(update_fields = ['idalum', 'ape1alum', 'ape2alum', 'nom1alum', 'nom2alum', 'rh'])
+		alumno.save(update_fields = ['idalum', 'ape1alum', 'ape2alum', 'nom1alum', 'nom2alum'])
 		# Llama la la variable global upalum y suma +1 para contar el numero de registros actualizados
 		global upalum
 		upalum = upalum + 1
 	except:
 		# Si el alumno no existe, se guarda
-		alumno = Alumno(calum = value_array[0], idalum = value_array[1].replace('$', ''), ape1alum = value_array[2], ape2alum = value_array[3].replace('$', ''), nom1alum = value_array[4], nom2alum = value_array[5].replace('$', ''), rh = value_array[6].replace('$', ''))
+		alumno = Alumno(calum = value_array[0], idalum = value_array[1].replace('$', ''), ape1alum = value_array[2], ape2alum = value_array[3].replace('$', ''), nom1alum = value_array[4], nom2alum = value_array[5].replace('$', ''))
 		alumno.save()
 		# Llama la la variable global newalum y suma +1 para contar el numero de registros nuevos
 		global newalum
@@ -71,10 +70,9 @@ def sync_alum(request):
 		response['type'] = 'success'
 		response['title'] = 'Exito'
 		response['message'] = 'Exito en la sincronizacion de datos'
-		global upalum
-		upalum = 0
-		global newalum
+		global newalum, upalum
 		newalum = 0
+		upalum = 0
 	else:
 		# Se envia mensaje error si no se realizo la peticion
 		response['title'] = 'Ha ocurrido un error'
@@ -83,7 +81,9 @@ def sync_alum(request):
 	# Resouesta json
 	return HttpResponse(json.dumps(response), content_type = 'application/json')
 
+@csrf_exempt
 def sync_access(request):
+	asis = request.POST.get('asis')
 	response = {}
 	# Hora actual
 	time_now = datetime.now()
@@ -104,18 +104,12 @@ def sync_access(request):
 		movi_registro = {'file': open(directory, 'rb')}
 		# La llave del colegio se encuentra en settings.py en una variable llamada SCHOOL_KEY
 		# Realiza peticion a la url del server via http y se envia por post el file y la llave del colegio
-		r = requests.post('http://siacolweb.com/sw5.0/conection/syncAccess', files = movi_registro, data = {'school_key': settings.SCHOOL_KEY})
-		print r.text
-		if r.status_code == 200:
-			# Si se realizo la peticion y el server los guardó, se actualiza el state a 1 de los registros listados en el file
-			m_registro.update(state = 1)
-			response['type'] = 'success'
-			response['title'] = 'Exito'
-			response['message'] = 'Exito en la sincronizacion de datos'
-		else:
-			response['title'] = 'Ha ocurrido un error'
-			response['type'] = 'error'
-			response['message'] = 'Favor comunicarse con SistematizarEF'
+		r = requests.post('http://siacolweb.com/sw5.0/conection/syncAccess', files = movi_registro, data = {'school_key': settings.SCHOOL_KEY, 'asis': asis})
+		# Si se realizo la peticion y el server los guardó, se actualiza el state a 1 de los registros listados en el file
+		m_registro.update(state = 1)
+		response['type'] = 'success'
+		response['title'] = 'Exito'
+		response['message'] = 'Exito en la sincronizacion de datos. Se están enviando los correos a los acudientes.'
 	else:
 		response['title'] = 'Alerta'
 		response['type'] = 'warning'
@@ -164,7 +158,6 @@ def mark_access(request, calum):
 			response['calum'] = alumno.calum
 			response['nombre'] = alumno.nom1alum+' '+alumno.nom2alum
 			response['apellido'] = alumno.ape1alum+' '+alumno.ape2alum
-			response['rh'] = alumno.rh
 	except Alumno.DoesNotExist:
 		# Si no existe el alumno se envia mensaje error
 		response['title'] = 'Ha ocurrido un error'

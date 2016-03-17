@@ -12,7 +12,6 @@ class Alumno(models.Model):
 	ape2alum = models.CharField(max_length = 20, null = True, blank = True)
 	nom1alum = models.CharField(max_length = 20)
 	nom2alum = models.CharField(max_length = 20, null = True, blank = True)
-	rh = models.CharField(max_length = 4, null = True, blank = True)
 
 	def __str__(self):
 		return self.calum+" - "+self.nom1alum+" "+self.nom2alum+" "+self.ape1alum+" "+self.nom2alum

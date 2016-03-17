@@ -28,10 +28,12 @@ function loop(){
 	setTimeout(loop, delay);
 }
 */
-function sync_access(){
+function sync_access(asis = 'false'){
 	// Realiza una peticion ajax a una url de la app
 	$.ajax({
-		url: "/sync-access",
+		url: "/sync-access/",
+		type: 'POST',
+		data: {'asis': asis},
 		// Antes de hacer la peticion, mostrar cargando
 		beforeSend: function(){
 			$('.loading').empty();
@@ -52,6 +54,7 @@ function sync_access(){
 				title: value.title,
 				msg: value.message,
 				sound: false,
+				delay: 7000
 			});
 		}
 	});
