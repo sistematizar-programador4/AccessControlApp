@@ -8,6 +8,11 @@ body{
 	margin: 0 ;
 	height: 100%
 }
+input[type="radio"]{
+	box-shadow: none;
+	width: auto;
+	margin: 5px;
+}
 .linkEditar{
 	color:#41a1ca !important;
 }

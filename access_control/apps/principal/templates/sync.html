@@ -14,20 +14,28 @@
 				var asis = 'false';
 				Lobibox.alert('info', {
 					title: "Alerta",
-					msg: "¿Desea enviar correos a los acudientes de alumnos que asistieron?",
+					msg: "¿A quien desea enviar los correos? <form class='form_new'><input type='radio' name='send-email' id='asis' value='true'/><label for='asis'>Acudientes de alumnos que asistieron</label><br><input type='radio' name='send-email' id='asis-no' value='false'/><label for='asis-no'>Acudientes de alumnos de no asistieron</label></form>",
 					buttons:{
 						yes: {
-							'text': 'Si'
+							'text': 'Aceptar'
 						},
-						no: {
-							'text': 'No'
+						cancel: {
+							'text': 'Cancelar'
 						}
 					},
 					callback: function(lobibox, type){
-						if(type == 'yes'){
-							asis = 'true';
+						var send_email = $('input[name="send-email"]:checked').val();
+						if(type != 'cancel'){
+							if(type == 'yes'){
+								if(send_email != null){
+									sync_access(send_email);
+								}else{
+									notify('error', 'Alerta', 'Seleccione una opción');
+								}
+							}
+						}else{
+							notify('error', 'Alerta', 'Cancelado por el usuario');
 						}
-						sync_access(asis);
 					}
 				});
 				return false;
@@ -50,33 +58,36 @@
 								'<p><strong>Total alumnos actualizados: </strong>'+value.upalum+'</p>'
 							);
 						}
-						Lobibox.notify(value.type, {
-							title: value.title,
-							msg: value.message,
-							sound: false,
-						});
+						notify(value.type, value.title, value.message);
 					}
 				});
 			}
 			$('.sync').click(function() {
 				var href = $(this).attr('href');
-				var con = 'false';
 				Lobibox.alert('info', {
 					title: "Alerta",
-					msg: "¿Desea actualizar los alumnos?",
+					msg: "¿Desea actualizar todos los alumnos? <form class='form_new'><input type='radio' name='upd-sync' id='update' value='true'/><label for='update'>Actualizar alumnos</label>  <input type='radio' name='upd-sync' id='sync' value='false'/><label for='sync'>Solo sincronizar</label></form>",
 					buttons:{
 						yes: {
-							'text': 'Actualizar alumnos'
+							'text': 'Aceptar'
 						},
-						no: {
-							'text': 'No, solo sincronizar'
+						cancel: {
+							'text': 'Cancelar'
 						}
 					},
 					callback: function(lobibox, type){
-						if(type == 'yes'){
-							con = 'true';
+						var upd = $('input[name="upd-sync"]:checked').val();
+						if(type != 'cancel'){
+							if(type == 'yes'){
+								if(upd != null){
+									sync_alum(href, upd);
+								}else{
+									notify('error', 'Alerta', 'Seleccione una opción');
+								}
+							}
+						}else{
+							notify('error', 'Alerta', 'Cancelado por el usuario');
 						}
-						sync_alum(href, con);
 					}
 				});
 				return false;

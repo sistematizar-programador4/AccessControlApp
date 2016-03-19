@@ -14,20 +14,14 @@ window.setInterval(function(){
 		sync_access();
 	}
 }, 60000);
-/*
-function loop(){
-	// Toma la fecha y hora actual
-	var now = new Date();
-	if (now.getHours() === parseInt(hour) && now.getMinutes() === parseInt(minute)){
-		// Si llego la hora, va a la funcion sync_access
-		sync_access();
-	}
-	console.log(hour, minute);
-	// Queda abierto a la espera de la hora de sincronizacion
-	var delay = 60000 - (now % 60000);
-	setTimeout(loop, delay);
+function notify(type, title, message){
+	Lobibox.notify(type, {
+		title: title,
+		msg: message,
+		sound: false,
+		delay: 7000
+	});
 }
-*/
 function sync_access(asis = 'false'){
 	// Realiza una peticion ajax a una url de la app
 	$.ajax({
@@ -50,12 +44,7 @@ function sync_access(asis = 'false'){
 				);
 			}
 			// Mostrar mensaje flotante en la pantalla
-			Lobibox.notify(value.type, {
-				title: value.title,
-				msg: value.message,
-				sound: false,
-				delay: 7000
-			});
+			notify(value.type, value.title, value.message);
 		}
 	});
 }
