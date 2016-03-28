@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.urlresolvers import reverse
 from datetime import datetime, timedelta
 from django.shortcuts import render
 from django.conf import settings
@@ -141,23 +142,16 @@ def mark_access(request, calum):
 		# Si arroja vacio, se toma por defecto como una salida
 		type_reg = 'S' if type_reg == '' else type_reg
 		# Guarda el registro del acceso del alumnos
-		for pro in MoviRegistro.objects.raw('SELECT * FROM principal_moviregistro WHERE calum_id = "'+alumno.calum+'" AND date = "'+str(time_now.date())+'" AND type_reg = "'+type_reg+'" AND time BETWEEN "'+m_hour+'" AND "'+p_hour+'"'):
-			repetido = True
-		if repetido is True:
-			response['title'] = 'Ha ocurrido un error'
-			response['type'] = 'error'
-			response['message'] = 'El alumno ya ha sido registrado'
-		else:
-			movimiento = MoviRegistro(calum = alumno, date = datetime.now(), time = time_now, type_reg = type_reg)
-			movimiento.save()
-			# Envia succes
-			response['sync_alum'] = True
-			response['title'] = 'Exito en el registro'
-			response['type'] = 'success'
-			response['message'] = 'Movimiento registrado'
-			response['calum'] = alumno.calum
-			response['nombre'] = alumno.nom1alum+' '+alumno.nom2alum
-			response['apellido'] = alumno.ape1alum+' '+alumno.ape2alum
+		movimiento = MoviRegistro(calum = alumno, date = datetime.now(), time = time_now, type_reg = type_reg)
+		movimiento.save()
+		# Envia succes
+		response['sync_alum'] = True
+		response['title'] = 'Exito en el registro'
+		response['type'] = 'success'
+		response['message'] = 'Movimiento registrado'
+		response['calum'] = alumno.calum
+		response['nombre'] = alumno.nom1alum+' '+alumno.nom2alum
+		response['apellido'] = alumno.ape1alum+' '+alumno.ape2alum
 	except Alumno.DoesNotExist:
 		# Si no existe el alumno se envia mensaje error
 		response['title'] = 'Ha ocurrido un error'
@@ -175,3 +169,28 @@ def get_param_sycn(request):
 	response['minute'] = str(param_sync.minute)
 	# Respuesta Json
 	return HttpResponse(json.dumps(response), content_type = 'application/json')
+
+def conf(request):
+	return render(request, 'conf.html', {'title': 'Configuración'})
+
+@csrf_exempt
+def edit_conf(request):
+	if request.method == 'POST':
+		h_sync = request.POST.get('h_sync')
+		h_in = request.POST.get('h_in')
+		h_sal = request.POST.get('h_sal')
+		n_sch = request.POST.get('n_sch')
+		h_sync_u = Parametro.objects.get(param1 = 'SY')
+		h_sync_u.param2 = h_sync
+		h_in_u = Parametro.objects.get(param1 = 'I')
+		h_in_u.param2 = h_in
+		h_sal_u = Parametro.objects.get(param1 = 'S')
+		h_sal_u.param2 = h_sal
+		n_sch_u = Parametro.objects.get(param1 = 'NC')
+		n_sch_u.nparam = n_sch
+		h_sync_u.save(update_fields = ['param2'])
+		h_sal_u.save(update_fields = ['param2'])
+		h_in_u.save(update_fields = ['param2'])
+		n_sch_u.save(update_fields = ['nparam'])
+		return HttpResponseRedirect(reverse('home'))
+	return render(request, 'edit-conf.html', {'title': 'Editar Configuración'})

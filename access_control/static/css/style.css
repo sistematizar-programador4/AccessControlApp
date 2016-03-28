@@ -8,6 +8,9 @@ body{
 	margin: 0 ;
 	height: 100%
 }
+.form-group{
+	margin-bottom: 10px;
+}
 input[type="radio"]{
 	box-shadow: none;
 	width: auto;

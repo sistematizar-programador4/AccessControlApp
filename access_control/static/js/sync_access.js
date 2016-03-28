@@ -2,16 +2,17 @@
 var load_event = '<img src="/static/img/loading.gif"/><h3>Sincronizando, por favor espere</h3>';
 // Crea una funcion loop par que este pendiente de la hora de sincronizacion
 var hour = 0, minute = 0;
-// Peticion get a una url de la app para obtener la hora de sincronizacion tomado de la base de datos
 $.get('/get-hour-sync', function(data){
 	hour = data.hour;
 	minute = data.minute;
 });
+// Peticion get a una url de la app para obtener la hora de sincronizacion tomado de la base de datos
 window.setInterval(function(){
+	console.log(hour);
 	var now = new Date();
 	if (now.getHours() === parseInt(hour) && now.getMinutes() === parseInt(minute)){
 		// Si llego la hora, va a la funcion sync_access
-		sync_access();
+		sync_access('false');
 	}
 }, 60000);
 function notify(type, title, message){
@@ -22,7 +23,7 @@ function notify(type, title, message){
 		delay: 7000
 	});
 }
-function sync_access(asis = 'false'){
+function sync_access(asis){
 	// Realiza una peticion ajax a una url de la app
 	$.ajax({
 		url: "/sync-access/",

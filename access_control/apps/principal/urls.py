@@ -8,4 +8,6 @@ urlpatterns = patterns('access_control.apps.principal.views',
 	url(r'^sync-access/$', 'sync_access', name = 'sync_access'),
 	url(r'^sync-alum/$', 'sync_alum', name = 'sync_alum'),
 	url(r'^Alumnos/mark-access/(?P<calum>\d+)/$', 'mark_access', name = 'mark_access'),
+     url(r'^Configuracion/$', 'conf', name = 'conf'),
+	url(r'^Configuracion/Editar/$', 'edit_conf', name = 'edit_conf'),
 )

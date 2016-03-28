@@ -28,7 +28,7 @@ class MoviRegistro(models.Model):
 
 class Parametro(models.Model):
 	cparam = models.CharField(max_length = 3, primary_key = True)
-	nparam = models.CharField(max_length = 30)
+	nparam = models.CharField(max_length = 80)
 	param1 = models.CharField(max_length = 10, null = True, blank = True)
 	param2 = models.TimeField()
 	param3 = models.CharField(max_length = 10, null = True, blank = True)

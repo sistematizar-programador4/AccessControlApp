@@ -22,9 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '09xs-4!a!ey0=pw==4mi%r2ta_x!_pw$-9f1-1#8_0$0)sd&&$'
 
-SCHOOL_KEY = 'xZFS!eU=#5jcgzL&a2zK&BU*6rv^&pxYjunMJFr8FMJfZ9JE&8'
-
-NAME_SCHOOL = 'Demo - Siacolweb'
+SCHOOL_KEY = 'd2$A-Rp&fxQza$Hx6Zknwy5+S_77c*G4ZeDyJmNQGPusynH=k*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

@@ -1,0 +1,36 @@
+{% load school_tags %}
+
+{% load staticfiles %}
+
+<form action="{% url 'edit_conf' %}" method="POST">
+	<h2>{{ title }}</h2>
+	<div style="margin-top: 5px;">
+		<div class="form-group">
+			<label>Hora de Sincronización	</label>
+			<input type="text" name="h_sync" id="hour_sy" value="{% params 'SY' %}" placeholder="Hora de Sincronización" required>
+		</div>
+		<div class="form-group">
+			<label>Hora de Ingreso</label>
+			<input type="text" name="h_in" id="hour_i" value="{% params 'I' %}" placeholder="Hora de Ingreso" required>
+		</div>
+		<div class="form-group">
+			<label>Hora de Salida</label>
+			<input type="text" name="h_sal" id="hour_s" value="{% params 'S' %}" placeholder="Hora de Salida" required>
+		</div>
+		<div class="form-group">
+			<label>Nombre del Colegio</label>
+			<input type="text" name="n_sch" value="{% school_name %}" placeholder="Hora de sincronización" required>
+		</div>
+		<input type="submit" class="btn btn-accept send" value="Actualizar" style="width: 100px; margin-top: 10px;">
+	</div>
+</form>
+
+{% block content_head %}
+<script>
+	$(document).ready(function (){
+		$('#hour_sy').timepicker({ 'timeFormat': 'H:i:s' });
+		$('#hour_s').timepicker({ 'timeFormat': 'H:i:s' });
+		$('#hour_i').timepicker({ 'timeFormat': 'H:i:s' });
+	});
+</script>
+{% endblock content_head %}

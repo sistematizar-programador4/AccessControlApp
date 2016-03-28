@@ -1,11 +1,12 @@
 {% load school_tags %}
 
 <div class="title-colegio">
-	<h2 class="h2-title-colegio">{% name_school %}</h2>
+	<h2 class="h2-title-colegio">{% school_name %}</h2>
 </div>
 <div class="menu-content">
 	<ul class="menu_new">
 		<li><a href="{% url 'home' %}">Inicio</a></li>
 		<li><a href="{% url 'sync' %}">Sincronización</a></li>
+		<li><a href="{% url 'conf' %}">Configuración</a></li>
 	</ul>
 </div>

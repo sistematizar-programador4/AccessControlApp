@@ -1,0 +1,37 @@
+{% extends 'layout/base.html' %}
+
+{% load staticfiles %}
+
+{% load school_tags %}
+
+{% block content_head %}
+	<link rel="stylesheet" href="{% static 'css/jquery.timepicker.css' %}">
+	<script src="{% static 'js/jquery.timepicker.min.js' %}"></script>
+	<script>
+		$(document).ready(function (){
+			$('.send').click(function(e){
+				e.preventDefault();
+				$('.content').remove();
+				$('.load').load(this.href);
+			});
+		});
+	</script>
+{% endblock %}
+
+{% block content %}
+	<section class="sectionForm" style="text-align: center; padding:15px 20px;">
+		<section class="headerForm">
+			<legend class="titleForm">
+				Configuración
+			</legend>
+		</section>
+		<div class="load"></div>
+		<div class="content">
+			<p><strong>Hora de Sincronización: </strong>{% params 'SY' %}</p>
+			<p><strong>Hora de Ingreso: </strong>{% params 'I' %}</p>
+			<p><strong>Hora de Salida: </strong>{% params 'S' %}</p>
+			<p><strong>Nombre: </strong>{% school_name %}</p>
+			<a href="{% url 'edit_conf' %}" class="btn btn-accept send">Editar</a>
+		</div>
+	</section>
+{% endblock content %}
