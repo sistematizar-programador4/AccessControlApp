@@ -9,6 +9,7 @@ from django.db.models import Max
 import json, time, requests
 from .models import *
 from .forms import *
+import os
 
 newalum = 0
 upalum = 0
@@ -89,7 +90,7 @@ def sync_access(request):
 	# Hora actual
 	time_now = datetime.now()
 	# Crea una variable con el path y name del file que contiene los datos del control de acceso de los alumnos
-	directory = 'access_control/static/files/file-'+str(time_now.year)+'-'+str(time_now.day)+'-'+str(time_now.hour)+'-'+str(time_now.minute)+'-'+str(time_now.second)+'.txt'
+	directory = os.path.join(settings.MEDIA_ROOT, 'files/file-'+str(time_now.year)+'-'+str(time_now.day)+'-'+str(time_now.hour)+'-'+str(time_now.minute)+'-'+str(time_now.second)+'.txt')
 	# Crea un nuevo file con la direccion y nombre de directory, se abre en modo escritura
 	movi_registro = open(directory, 'w')
 	# Se Consulta y se lista todos los registro con state = 0
