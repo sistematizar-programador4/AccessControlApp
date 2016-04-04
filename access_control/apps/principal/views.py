@@ -180,18 +180,14 @@ def edit_conf(request):
 		h_sync = request.POST.get('h_sync')
 		h_in = request.POST.get('h_in')
 		h_sal = request.POST.get('h_sal')
-		n_sch = request.POST.get('n_sch')
 		h_sync_u = Parametro.objects.get(param1 = 'SY')
 		h_sync_u.param2 = h_sync
 		h_in_u = Parametro.objects.get(param1 = 'I')
 		h_in_u.param2 = h_in
 		h_sal_u = Parametro.objects.get(param1 = 'S')
 		h_sal_u.param2 = h_sal
-		n_sch_u = Parametro.objects.get(param1 = 'NC')
-		n_sch_u.nparam = n_sch
 		h_sync_u.save(update_fields = ['param2'])
 		h_sal_u.save(update_fields = ['param2'])
 		h_in_u.save(update_fields = ['param2'])
-		n_sch_u.save(update_fields = ['nparam'])
 		return HttpResponseRedirect(reverse('home'))
 	return render(request, 'edit-conf.html', {'title': 'Editar Configuración'})
